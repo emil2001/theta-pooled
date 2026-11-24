@@ -24,7 +24,7 @@ const ObsIds & Model::get_observables() const{
 }
 
 
-atomic_int theta::n_nll_eval, theta::n_nll_eval_with_derivative;
+theta::atomic_int theta::n_nll_eval, theta::n_nll_eval_with_derivative;
 
 namespace{
 

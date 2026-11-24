@@ -13,7 +13,7 @@ ifeq ($(OPTIONS_BUILD_TBB),yes)
 endif
 
 all:
-	@for d in $(DIRS); do ( $(MAKE) -C $$d ) || break; done
+	@for d in $(DIRS); do ( $(MAKE) -C $$d ) || exit $$?; done
 
 clean:
 	@for d in $(DIRS); do ( $(MAKE) -C $$d clean ) || true; done

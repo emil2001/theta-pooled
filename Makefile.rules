@@ -16,7 +16,7 @@ endif
 # This could be 32 bit for a 64 bit system (e.g., if running 32-bit CMS software on a 64-bit machine).
 # The variable BUILD_ARCH will be 'x86_64' for 64 bit systems, 'x86_32' for 32-bit systems and
 # empty for non-recognized systems.
-BUILD_ARCH:=
+BUILD_ARCH:=x86_64
 ifneq ($(shell :|$(CXX) -dM -E - | grep __amd64__),)
    BUILD_ARCH:=x86_64
 else
@@ -33,19 +33,16 @@ ifneq ($(shell echo -n $$CMSSW_BASE),)
 endif
 
 ifneq ($(OPTIONS_BOOSTDIR),)
-   BOOST_INCLUDE := -I$(OPTIONS_BOOSTDIR)/include
-   BOOST_LIBS := -L$(OPTIONS_BOOSTDIR)/lib -lboost_system -lboost_regex -lboost_program_options -lboost_iostreams
-# if available, use dependencies from CMSSW:
+   BOOST_INCLUDE := -I$(OPTIONS_BOOSTDIR)/include/boost
+   BOOST_LIBS := -L$(OPTIONS_BOOSTDIR)/lib -lboost_filesystem -lboost_regex -lboost_program_options -lboost_thread -lboost_system -lboost_iostreams
 else
    ifeq ($(HAVE_SCRAM),yes)
       scram = $(shell cd $$CMSSW_BASE; scram tool tag $(1) $(2))
       BOOST_INCLUDE := -I$(call scram,boost,INCLUDE)
       BOOST_LIBLIST := $(call scram,boost,LIB) $(call scram,boost_filesystem,LIB) $(call scram,boost_program_options,LIB) $(call scram,boost_regex,LIB)
       BOOST_LIBS := -L$(call scram,boost,LIBDIR) $(patsubst %,-l%,$(BOOST_LIBLIST)) -lboost_iostreams
-   # otherwise: assume dependencies are installed system-wide and no paths have to be set explicitely:
    else
       BOOST_INCLUDE:=
-      #on some systems, boost libraries have a "-mt" suffix. This is a dirty hack. If you know better, tell me:
       BS:=
       ifeq ($(shell if test -e /usr/lib/libboost_system-mt.so -o -e /usr/lib64/libboost_system-mt.so; then echo -n A; fi)$,A)
          BS:=-mt
@@ -105,16 +102,16 @@ endif
 
 ifeq ($(OPTIONS_TIMER),yes)
     DEFINES += -DUSE_TIMER
-    LIBS += -lboost_timer$(BS)
+    LIBS += -lboost_timer
 endif
 
-FLAGSC := -g -Wall -fPIC $(INCLUDES) $(DEFINES) $(OPTIONS_CFLAGS)
+FLAGSC := -g -Wall -fPIC $(INCLUDES) $(DEFINES) $(OPTIONS_CFLAGS) --std=c++17
 # -Wno-unused-local-typedefs to suppress a *lot* of g++ warnings in certain combinations with boost
 FLAGSCPP := $(FLAGSC) -Wnon-virtual-dtor -Woverloaded-virtual -Wsign-promo -Wno-unused-local-typedefs
 
 ifneq ($(OPTIONS_DEBUG),yes)
-    FLAGSC += -O3
-    FLAGSCPP += -O3
+    FLAGSC += -O2
+    FLAGSCPP += -O2
 endif
 
 #lazy evaluation because of $@, $+.

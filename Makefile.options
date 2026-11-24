@@ -11,7 +11,7 @@ OPTIONS_BUILD_TESTS := no
 
 # If yes, use amdlibm for some math functions instead of libm, most notably "exp" and "log",
 # resulting in some speed gain.
-OPTIONS_USE_AMDLIBM := yes
+OPTIONS_USE_AMDLIBM := no
 
 # If yes, build llvm plugins in "llvm" subdirectory. Requires working
 # llvm installation (tested with 3.1)

@@ -1,19 +1,24 @@
-include ../Makefile.options
+SOURCES = $(wildcard *.c)
+OBJECTS = $(SOURCES:.c=.o) libconfigcpp.o
 
-sources := $(wildcard *.c)
-objects := $(patsubst %.c,.bin/%.o,$(sources)) .bin/libconfigcpp.o
-deps := $(patsubst %.o,%.d,$(objects))
+all: libconfig++.a ../lib/libconfig.so
 
-include ../Makefile.rules
+libconfig++.a: $(OBJECTS)
+	@ar -cvq $@ $+
 
-#use fewer warning here:
-WFLAGSCPP := -Wall
+libconfig++.so: $(OBJECTS)
+	@g++ -fPIC -shared $(OBJECTS) -o $@
 
-all: ../lib/libconfig.so
+../lib/libconfig.so: libconfig++.so
+	@cp $< $@
 
-../lib/libconfig.so: $(objects)
-	@$(LINK_SO)
+libconfigcpp.o: libconfigcpp.c++
+	@g++ -fPIC -c $< -o $@
 
-clean-subdir:
-	@rm -f ../lib/libconfig.so
+%.o: %.c
+	@gcc -std=gnu11 -fPIC -c $< -o $@
 
+.PHONY: clean
+
+clean:
+	@rm -f *.o *.a *.so ../lib/libconfig.so

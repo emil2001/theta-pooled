@@ -80,7 +80,7 @@ void run_mt::run(){
             workers[it].bs->declare_columns(*products_table);
         }
         int runid = 1 + it;
-        workers[it].bs->replay_to(*products_table, boost::bind(&ProductsTable::add_row, boost::ref(*products_table), runid, _1));
+        workers[it].bs->replay_to(*products_table, boost::bind(&ProductsTable::add_row, boost::ref(*products_table), runid, std::placeholders::_1));
         const std::vector<ToyMaker::LogMessage> & log_messages = workers[it].tm->get_log_messages();
         for(size_t i=0; i<log_messages.size(); ++i){
             logtable->append(runid, log_messages[i].eventid, log_messages[i].severity, log_messages[i].message);

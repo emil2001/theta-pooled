@@ -1,0 +1,10 @@
+.bin/
+__pycache__/
+*.pyc
+*.o
+*.a
+*.so
+/bin/theta
+/bin/merge
+Makefile.options.local
+/build/
