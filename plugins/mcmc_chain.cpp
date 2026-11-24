@@ -54,6 +54,7 @@ class MCMCResultDatabase: public MCMCResult {
     public:
         MCMCResultDatabase(const vector<string> & parameter_names, Table & table_): npar(parameter_names.size()), table(table_){
             c_weight = table.add_column("weight", typeInt);
+            c_nll = table.add_column("nll", typeDouble);
             for(size_t i=0; i<parameter_names.size(); ++i){
                 c_parameters.push_back(table.add_column(parameter_names[i], typeDouble));
             }
@@ -63,9 +64,10 @@ class MCMCResultDatabase: public MCMCResult {
             return npar;
         }
         
-        void fill(const double * x, double, size_t n_){
+        void fill(const double * x, double nll, size_t n_){
             Row r;
             r.set_column(c_weight, (int)n_);
+            r.set_column(c_nll, nll);
             for(size_t i=0; i<c_parameters.size(); ++i){
                 r.set_column(c_parameters[i], x[i]);
             }
@@ -75,6 +77,7 @@ class MCMCResultDatabase: public MCMCResult {
     private:
         size_t npar;
         Column c_weight;
+        Column c_nll;
         vector<Column> c_parameters;
         Table & table;
 };
